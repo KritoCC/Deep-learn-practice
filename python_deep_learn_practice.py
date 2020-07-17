@@ -178,3 +178,45 @@ x
 x = np.zeros((300, 20))
 x = np.transpose(x)
 print(x.shape)
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 17 09:28:38 2020
+
+@author: Krito
+"""
+import keras
+from keras.datasets import imdb
+import numpy as np
+
+(train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=10000)
+# print(np.__doc__) 查看模块的作用说明、简介
+# help(imdb.load_data) 查看某个函数的用法
+train_data[0]  # 序列最开始的的数字1不表示任何意义，数字2表示已经超出我们限定的词语范围
+train_labels[0]
+max([max(sequence) for sequence in train_data])
+
+word_index = imdb.get_word_index()
+# 将字典中的key和value颠倒
+reverse_word_index = dict(
+    [(value, key) for (key, value) in word_index.items()])# .items() 将字典中的key和value都列出来
+# 解码评论。 请注意，索引偏移了3，因为0、1和2是“填充”，“序列开始”和“未知”的保留索引,因此需要减去3
+decoded_review = ' '.join(
+    [reverse_word_index.get(i - 3, '?') for i in train_data[0]]) #join 用于字符串连接；get() 函数返回指定键的值，如果值不在字典中返回默认值
+
+
+# 采用one-hot编码，将其转换为0和1的向量。‘存在的数对应1，不存在的数对应0’
+# 例如，这将意味着将序列[3，5]转换为一个10,000维向量，除了索引3和5（是1）之外，所有向量均为0。
+# 然后，您可以将能够处理浮点矢量数据的dense层用作网络中的第一层。
+def vectorize_sequences(sequences, dimension = 10000):
+    results = np.zeros((len(sequences), dimension))
+    # enumerate()函数用于将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标
+    for i, sequences in enumerate(sequences):
+        results[i, sequences] = 1.
+    return results
+
+x_train = vectorize_sequences(train_data)
+x_test = vectorize_sequences(test_data)
+y_train = vectorize_sequences(train_labels).astype('float32')
+y_test = vectorize_sequences(test_labels).astype('float32')
