@@ -150,7 +150,7 @@ print(classification_report(y_test,prediction))
 help(classification_report)
 
 
-# 看一下随机去猜的正确率
+# 如果随机去猜，看一下正确率是多少
 test_copy = copy.copy(y_test)
 np.random.shuffle(test_copy) # 顺序打乱
 float(np.sum(np.array(y_test) == np.array(test_copy))) / len(y_test)
